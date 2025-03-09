@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: ga4gh-schema-registry-search-engine
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/gscr_crawler
+    username: gscr_crawler
+    password: dev_password_never_use_in_prod
+    driverClassName: org.postgresql.Driver
