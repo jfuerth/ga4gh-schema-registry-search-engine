@@ -7,3 +7,9 @@ spring:
     username: gscr_crawler
     password: dev_password_never_use_in_prod
     driverClassName: org.postgresql.Driver
+logging:
+  level:
+    dev:
+      langchain4j:
+        store:
+          embedding: DEBUG

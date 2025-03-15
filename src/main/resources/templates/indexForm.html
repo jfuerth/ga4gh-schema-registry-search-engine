@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Index Registry</title>
+</head>
+<body>
+<h1>Index a Registry</h1>
+<form action="#" th:action="@{/ui/index}" method="post">
+    <label for="registryUri">Registry URI:</label>
+    <input type="text" id="registryUri" name="registryUri" required>
+    <br>
+    <label for="includeNamespaces">Include Namespaces (optional):</label>
+    <input type="text" id="includeNamespaces" name="includeNamespaces">
+    <br>
+    <button type="submit">Submit</button>
+</form>
+
+<div th:if="${indexingResult}">
+    <h2>Indexing Result</h2>
+    <p>Documents Added: <span th:text="${indexingResult.documentsAdded}"></span></p>
+</div>
+</body>
+</html>

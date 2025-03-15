@@ -1,0 +1,11 @@
+* split the schemas documents by attribute
+* include top-level description from inside JSON Schema as chunk metadata
+* make the UI look nicer:
+  * navigation sidebar
+  * material CSS
+  * line up form fields
+  * render errors
+  * show link to source schema registry in search results
+* handle errors better
+  * let the indexing pipeline return Either<Error, IndexableSchema>
+  * bubble these up to the top result

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search Index</title>
+</head>
+<body>
+<h1>Search the Index</h1>
+<form action="#" th:action="@{/ui/search}" method="post">
+    <label for="query">Search Query:</label>
+    <input type="text" id="query" name="q" required>
+    <br>
+    <button type="submit">Search</button>
+</form>
+
+<div th:if="${searchResult}">
+    <h2>Search Results</h2>
+    <ul>
+        <li th:each="hit : ${searchResult.hits}">
+            <strong>Text:</strong> <span th:text="${hit.text}"></span><br>
+            <strong>Metadata:</strong> <span th:text="${hit.metadata}"></span>
+        </li>
+    </ul>
+</div>
+</body>
+</html>
