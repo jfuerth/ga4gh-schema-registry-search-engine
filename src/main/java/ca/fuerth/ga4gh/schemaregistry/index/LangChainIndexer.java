@@ -1,6 +1,7 @@
 package ca.fuerth.ga4gh.schemaregistry.index;
 
 import ca.fuerth.ga4gh.schemaregistry.crawler.IndexableSchema;
+import ca.fuerth.ga4gh.schemaregistry.jsonschema.JsonSchemaSplitter;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentLoader;
 import dev.langchain4j.data.document.DocumentSource;
@@ -10,7 +11,6 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
-import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +32,9 @@ public class LangChainIndexer {
     @Autowired
     EmbeddingStore<TextSegment> embeddingStore;
 
+    @Autowired
+    JsonSchemaSplitter jsonSchemaSplitter;
+
     public IndexingResult addToIndex(Stream<IndexableSchema> schemas) {
         TextDocumentParser textDocumentParser = new TextDocumentParser(StandardCharsets.UTF_8);
         List<Document> documents = schemas
@@ -45,6 +48,7 @@ public class LangChainIndexer {
             EmbeddingStoreIngestor.builder()
                     .embeddingModel(embeddingModel)
                     .embeddingStore(embeddingStore)
+                    .documentSplitter(jsonSchemaSplitter)
                     .build()
                     .ingest(documents);
         }

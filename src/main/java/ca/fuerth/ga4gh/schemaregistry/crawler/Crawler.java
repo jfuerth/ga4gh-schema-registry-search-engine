@@ -1,6 +1,9 @@
 package ca.fuerth.ga4gh.schemaregistry.crawler;
 
-import ca.fuerth.ga4gh.schemaregistry.client.gscr.*;
+import ca.fuerth.ga4gh.schemaregistry.client.gscr.GscrClient;
+import ca.fuerth.ga4gh.schemaregistry.client.gscr.Namespace;
+import ca.fuerth.ga4gh.schemaregistry.client.gscr.SchemaRecord;
+import ca.fuerth.ga4gh.schemaregistry.client.gscr.SchemasResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

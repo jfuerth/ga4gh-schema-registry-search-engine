@@ -1,7 +1,5 @@
 package ca.fuerth.ga4gh.schemaregistry.client.gscr;
 
-import lombok.Data;
-
 import java.util.List;
 
 /** Metadata about a schema which is the same across all versions. */

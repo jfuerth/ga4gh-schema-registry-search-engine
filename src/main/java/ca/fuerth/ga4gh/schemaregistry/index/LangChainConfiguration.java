@@ -37,7 +37,6 @@ public class LangChainConfiguration {
             Jdbi jdbi,
             EmbeddingModel embeddingModel,
             DataSource dataSource,
-            @Value("${langchain.embedding-store.pgvector.table}") String table,
             @Value("${langchain.embedding-store.pgvector.useIndex}") boolean useIndex,
             @Value("${langchain.embedding-store.pgvector.indexListSize}") int indexListSize,
             @Value("${langchain.embedding-store.pgvector.dropTableOnStartup}") boolean dropTableOnStartup
@@ -56,7 +55,7 @@ public class LangChainConfiguration {
         }
         PgVectorEmbeddingStore embeddingStore = PgVectorEmbeddingStore.datasourceBuilder()
                 .datasource(dataSource)
-                .table(table)
+                .table("schema_vectors")
                 .dimension(embeddingModel.dimension())
                 .useIndex(useIndex)
                 .indexListSize(indexListSize)

@@ -1,5 +1,5 @@
-* split the schema documents by JSON Schema property (hook in at EmbeddingStoreIngestor.builder())
-* include top-level description from inside JSON Schema as chunk metadata
+!! figure out why 'smoking' no longer appears in the results
+
 * make the UI look nicer:
   * navigation sidebar
   * material CSS
@@ -8,10 +8,15 @@
   * show link to source schema registry in search results
 * handle errors better
   * let the indexing pipeline return Either<Error, IndexableSchema>
+    * errors: IO problems, remote HTTP errors, JSON parse errors
+    * notices: skipped namespaces or schemas that didn't match the filter
   * bubble these up to the top result
 
-* persist indexed stuff (starting with pgvector)
+* improve pgvector persistence
   * replace/update when re-indexing the same source
   * track the source URL of each document/segment
 
 DONE
+* split the schema documents by JSON Schema property (hook in at EmbeddingStoreIngestor.builder())
+* include top-level description from inside JSON Schema as chunk metadata
+* persist indexed stuff using pgvector

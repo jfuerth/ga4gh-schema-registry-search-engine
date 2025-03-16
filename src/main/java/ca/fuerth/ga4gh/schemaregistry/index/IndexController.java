@@ -2,7 +2,6 @@ package ca.fuerth.ga4gh.schemaregistry.index;
 
 import ca.fuerth.ga4gh.schemaregistry.crawler.Crawler;
 import ca.fuerth.ga4gh.schemaregistry.crawler.IndexableSchema;
-import dev.langchain4j.agent.tool.P;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
