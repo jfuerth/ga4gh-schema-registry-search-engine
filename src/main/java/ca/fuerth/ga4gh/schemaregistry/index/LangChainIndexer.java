@@ -7,6 +7,7 @@ import dev.langchain4j.data.document.DocumentSource;
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.document.parser.TextDocumentParser;
 import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
@@ -26,6 +27,9 @@ import java.util.stream.Stream;
 public class LangChainIndexer {
 
     @Autowired
+    EmbeddingModel embeddingModel;
+
+    @Autowired
     EmbeddingStore<TextSegment> embeddingStore;
 
     public IndexingResult addToIndex(Stream<IndexableSchema> schemas) {
@@ -38,7 +42,11 @@ public class LangChainIndexer {
             // EmbeddingStoreIngestor throws an exception if you ask it to index nothing
             log.info("Found no documents in IndexableSchema stream. Skipping ingestion.");
         } else {
-            EmbeddingStoreIngestor.ingest(documents, embeddingStore);
+            EmbeddingStoreIngestor.builder()
+                    .embeddingModel(embeddingModel)
+                    .embeddingStore(embeddingStore)
+                    .build()
+                    .ingest(documents);
         }
 
         return new IndexingResult(documents.size());

@@ -13,3 +13,13 @@ logging:
       langchain4j:
         store:
           embedding: DEBUG
+langchain:
+  embedding-store:
+    in-memory:
+      enabled: false
+    pgvector:
+      enabled: true
+      table: schema_vectors
+      useIndex: false
+      indexListSize: 1000 # recommendation is sqrt(number of segments)
+      dropTableOnStartup: false

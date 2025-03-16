@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id:  create-index-info-table
+      author:  jf
+      changes:
+        - createTable:
+            tableName:  index_info
+            columns:
+              - column:
+                  name:  created_at
+                  type:  timestamptz
+              - column:
+                  name:  embedding_model_class
+                  type:  varchar
+                  constraints:
+                    nullable:  false
+              - column:
+                  name:  embedding_dimensions
+                  type:  integer
