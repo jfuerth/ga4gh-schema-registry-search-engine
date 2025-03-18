@@ -2,7 +2,6 @@ spring:
   application:
     name: ga4gh-schema-registry-search-engine
   datasource:
-    platform: postgres
     url: jdbc:postgresql://localhost:5432/gscr_crawler
     username: gscr_crawler
     password: dev_password_never_use_in_prod
@@ -13,6 +12,7 @@ logging:
       langchain4j:
         store:
           embedding: DEBUG
+    liquibase: INFO
 langchain:
   embedding-store:
     in-memory:
@@ -21,4 +21,4 @@ langchain:
       enabled: true
       useIndex: false
       indexListSize: 1000 # recommendation is sqrt(number of segments)
-      dropTableOnStartup: false
+      dropTableOnStartup: IF_EMBEDDING_MODEL_CHANGED
