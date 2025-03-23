@@ -1,14 +1,12 @@
 * improve pgvector persistence
   * replace/update when re-indexing the same source
-
-* make the UI look nicer:
+* Search UI: show stats on the welcome page about how many sites, indexes, and properties are in the index
+* make the Indexing UI look nicer:
   * show "last indexed" results for each schema server and namespace
     * provide a "reindex" button (depends on "improve pgvector persistence")
   * navigation sidebar
-  * material CSS
-  * line up form fields
+  * line up index form fields
   * render errors
-  * show link to source schema registry in search results
 * handle errors better
   * let the indexing pipeline return Either<Error, IndexableSchema>
     * errors: IO problems, remote HTTP errors, JSON parse errors
@@ -21,3 +19,5 @@ DONE
 * persist indexed stuff using pgvector
 * figure out why 'smoking' no longer appears in the results: the schema endpoint returns a Data Connect table info response rather than a schema at the root.
 * track the source URL of each document/segment in the index metadata
+* Search UI: material CSS
+* Search UI: show link to source schema registry in search results

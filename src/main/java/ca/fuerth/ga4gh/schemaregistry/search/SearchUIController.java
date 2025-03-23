@@ -18,6 +18,7 @@ public class SearchUIController {
     @GetMapping("/search")
     public String showSearchForm(Model model) {
         model.addAttribute("searchResult", null);
+        model.addAttribute("query", "");
         return "searchForm";
     }
 
@@ -25,6 +26,7 @@ public class SearchUIController {
     public String submitSearchRequest(@RequestParam("q") String query, Model model) {
         SearchResult result = searchController.search(query);
         model.addAttribute("searchResult", result);
+        model.addAttribute("query", query);
         return "searchForm";
     }
 }

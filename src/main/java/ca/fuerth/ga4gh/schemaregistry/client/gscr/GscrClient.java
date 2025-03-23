@@ -43,9 +43,9 @@ public interface GscrClient {
     // GET /schemas/{namespace}/{schema_name}/versions/{semantic_version}/schema
 
     default URI computeSchemaVersionUri(URI baseUri, String namespace, String schemaName, String semanticVersion) {
-        UriTemplate uriTemplate = UriTemplate.create("{base_uri}/schemas/{namespace}/{schema_name}/versions/{semantic_version}", StandardCharsets.UTF_8);
-        return URI.create(uriTemplate.expand(Map.of(
-                "baseUri", baseUri.toString(),
+        UriTemplate uriTemplate = UriTemplate.create("/schemas/{namespace}/{schema_name}/versions/{semantic_version}", StandardCharsets.UTF_8);
+        return baseUri.resolve(uriTemplate.expand(Map.of(
+                "base_uri", baseUri.toString(),
                 "namespace", namespace,
                 "schema_name", schemaName,
                 "semantic_version", semanticVersion)));

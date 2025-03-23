@@ -2,24 +2,109 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Search Index</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        .container-centered {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+            text-align: center;
+        }
+        .search-container {
+            margin-top: 20px;
+        }
+        .search-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .search-bar .input-field {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        .search-bar button {
+            flex-shrink: 0;
+            height: 3rem;
+            align-self: center;
+        }
+        pre code {
+            display: block;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .schema-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-wrapper {
+            padding-left: 20px;
+        }
+    </style>
 </head>
-<body>
-<h1>Search the Index</h1>
-<form action="#" th:action="@{/ui/search}" method="post">
-    <label for="query">Search Query:</label>
-    <input type="text" id="query" name="q" required>
-    <br>
-    <button type="submit">Search</button>
-</form>
+<body class="container">
 
-<div th:if="${searchResult}">
-    <h2>Search Results</h2>
-    <ul>
-        <li th:each="hit : ${searchResult.hits}">
-            <strong>Text:</strong> <span th:text="${hit.text}"></span><br>
-            <strong>Metadata:</strong> <span th:text="${hit.metadata}"></span>
+<nav>
+    <div class="nav-wrapper">
+        <a href="#" class="brand-logo">Schema Search</a>
+    </div>
+</nav>
+
+<div th:if="${searchResult == null}" class="container-centered">
+    <h4>Search Schema Registries</h4>
+    <p>Enter a few words to find schemas with similar concepts.</p>
+    <form th:action="@{/ui/search}" method="post" class="search-container">
+        <div class="input-field" style="width: 100%;">
+            <input type="text" id="query" name="q" required>
+            <label for="query">Search for...</label>
+        </div>
+        <button class="btn waves-effect waves-light" type="submit">Search</button>
+    </form>
+</div>
+
+<div th:if="${searchResult != null}">
+    <div class="search-bar">
+        <form th:action="@{/ui/search}" method="post" class="search-container" style="display: flex; width: 100%;">
+            <div class="input-field" style="flex-grow: 1;">
+                <input type="text" id="query" name="q" th:value="${query}" required>
+                <label for="query">Search Terms</label>
+            </div>
+            <button class="btn waves-effect waves-light" type="submit">Search</button>
+        </form>
+    </div>
+
+    <h4>Search Results</h4>
+    <ul class="collection">
+        <li th:each="hit : ${searchResult.hits}" class="collection-item">
+            <div class="schema-header">
+                <h5 th:text="${hit.metadata['schema.name']}"></h5>
+                <a th:href="${hit.metadata['schema.version.uri']}" target="_blank" class="btn-flat">
+                    <i class="material-icons">link</i>
+                </a>
+            </div>
+            <p><strong>Maintainers:</strong> <span th:text="${hit.metadata['schema.maintainers']}"></span></p>
+            <pre><code class="json" th:text="${hit.text}"></code></pre>
         </li>
     </ul>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll("pre code").forEach((block) => {
+            block.textContent = JSON.stringify(JSON.parse(block.textContent), null, 2);
+            hljs.highlightElement(block);
+        });
+    });
+</script>
 </body>
 </html>
