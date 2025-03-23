@@ -4,7 +4,7 @@ databaseChangeLog:
       author:  jf
       changes:
         - createTable:
-            tableName:  index_info
+            tableName:  index_storage_settings
             columns:
               - column:
                   name:  created_at

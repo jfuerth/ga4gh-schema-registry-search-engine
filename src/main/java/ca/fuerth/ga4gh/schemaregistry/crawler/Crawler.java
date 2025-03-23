@@ -49,7 +49,8 @@ public class Crawler {
                                                     namespaceSchemas.namespace(),
                                                     schema.schemaName(),
                                                     GscrClient.LATEST_VERSION)));
-                });
+                })
+                .peek(indexableSchema -> log.debug("Found {}", indexableSchema));
     }
 
 

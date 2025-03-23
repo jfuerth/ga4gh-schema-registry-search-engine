@@ -8,11 +8,12 @@ spring:
     driverClassName: org.postgresql.Driver
 logging:
   level:
-    dev:
-      langchain4j:
+    dev.langchain4j:
         store:
           embedding: DEBUG
     liquibase: INFO
+    ca.fuerth.ga4gh.schemaregistry:
+      crawler: INFO
 langchain:
   embedding-store:
     in-memory:

@@ -1,6 +1,10 @@
-!! figure out why 'smoking' no longer appears in the results
+* improve pgvector persistence
+  * replace/update when re-indexing the same source
+  * track the source URL of each document/segment
 
 * make the UI look nicer:
+  * show "last indexed" results for each schema server and namespace
+    * provide a "reindex" button (depends on "improve pgvector persistence")
   * navigation sidebar
   * material CSS
   * line up form fields
@@ -12,11 +16,8 @@
     * notices: skipped namespaces or schemas that didn't match the filter
   * bubble these up to the top result
 
-* improve pgvector persistence
-  * replace/update when re-indexing the same source
-  * track the source URL of each document/segment
-
 DONE
 * split the schema documents by JSON Schema property (hook in at EmbeddingStoreIngestor.builder())
 * include top-level description from inside JSON Schema as chunk metadata
 * persist indexed stuff using pgvector
+* figure out why 'smoking' no longer appears in the results: the schema endpoint returns a Data Connect table info response rather than a schema at the root.

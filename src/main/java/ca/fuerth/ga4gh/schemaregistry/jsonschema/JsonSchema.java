@@ -2,7 +2,6 @@ package ca.fuerth.ga4gh.schemaregistry.jsonschema;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 
 import java.util.ArrayList;

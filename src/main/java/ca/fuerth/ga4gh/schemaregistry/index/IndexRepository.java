@@ -5,18 +5,20 @@ import org.jdbi.v3.sqlobject.customizer.BindMethods;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
+import java.util.Optional;
+
 public interface IndexRepository {
 
-    @SqlQuery("select * from index_info")
-    @RegisterConstructorMapper(IndexInfo.class)
-    IndexInfo getIndexInfo();
+    @SqlQuery("select * from index_storage_settings")
+    @RegisterConstructorMapper(IndexStorageSettings.class)
+    Optional<IndexStorageSettings> getIndexStorageSettings();
 
-    @SqlUpdate("delete from index_info")
+    @SqlUpdate("delete from index_storage_settings")
     void clearIndexInfo();
 
     @SqlUpdate("""
-        insert into index_info (created_at, embedding_model_class, embedding_dimensions)
+        insert into index_storage_settings (created_at, embedding_model_class, embedding_dimensions)
         values (:createdAt, :embeddingModelClass, :embeddingDimensions)
         """)
-    void setIndexInfo(@BindMethods IndexInfo indexInfo);
+    void setIndexInfo(@BindMethods IndexStorageSettings indexStorageSettings);
 }
