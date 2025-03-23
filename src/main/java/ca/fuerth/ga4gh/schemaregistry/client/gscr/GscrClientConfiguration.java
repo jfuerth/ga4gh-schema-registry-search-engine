@@ -28,6 +28,7 @@ public class GscrClientConfiguration {
         Logger requestLogger = LoggerFactory.getLogger(GscrClient.class);
 
         OkHttpClient okHttpClient = new OkHttpClient(new okhttp3.OkHttpClient.Builder()
+                .followRedirects(true)
                 .addInterceptor(
                         new HttpLoggingInterceptor(requestLogger::info)
                                 .setLevel(HttpLoggingInterceptor.Level.BASIC))

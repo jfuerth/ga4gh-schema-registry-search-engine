@@ -40,13 +40,13 @@ class CrawlerTest {
         SchemasResponse ns1Schemas = new SchemasResponse("namespace-1", List.of(
                 new SchemaRecord("sch1", "1.0.0", List.of("person 1", "person 2"), "draft"),
                 new SchemaRecord("sch2", "1.0.0", List.of("person 3", "person 4"), "draft")
-        ));
+        ), null);
         SchemasResponse ns2Schemas = new SchemasResponse("namespace-2", List.of(
                 new SchemaRecord("sch3", "1.0.0", List.of("person 5", "person 6"), "draft")
-        ));
-        SchemasResponse nsEmptySchemas = new SchemasResponse("namespace-empty", List.of());
+        ), null);
+        SchemasResponse nsEmptySchemas = new SchemasResponse("namespace-empty", List.of(), null);
 
-        when(gscrClient.getNamespaces(registryBaseUri)).thenReturn(new NamespacesResponse(registryBaseUri, namespaces));
+        when(gscrClient.getNamespaces(registryBaseUri)).thenReturn(new NamespacesResponse(registryBaseUri, namespaces, null));
         lenient().when(gscrClient.getSchemas(registryBaseUri, "namespace-1")).thenReturn(ns1Schemas);
         lenient().when(gscrClient.getSchemas(registryBaseUri, "namespace-2")).thenReturn(ns2Schemas);
         lenient().when(gscrClient.getSchemas(registryBaseUri, "namespace-empty")).thenReturn(nsEmptySchemas);
