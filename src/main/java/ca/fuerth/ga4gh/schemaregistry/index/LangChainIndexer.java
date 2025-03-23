@@ -1,6 +1,6 @@
 package ca.fuerth.ga4gh.schemaregistry.index;
 
-import ca.fuerth.ga4gh.schemaregistry.crawler.IndexableSchema;
+import ca.fuerth.ga4gh.schemaregistry.crawler.CrawledSchema;
 import ca.fuerth.ga4gh.schemaregistry.jsonschema.JsonSchemaSplitter;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentLoader;
@@ -35,7 +35,7 @@ public class LangChainIndexer {
     @Autowired
     JsonSchemaSplitter jsonSchemaSplitter;
 
-    public IndexingResult addToIndex(Stream<IndexableSchema> schemas) {
+    public IndexingResult addToIndex(Stream<CrawledSchema> schemas) {
         TextDocumentParser textDocumentParser = new TextDocumentParser(StandardCharsets.UTF_8);
         List<Document> documents = schemas
                 .map(indexableSchema -> DocumentLoader.load(new SchemaDocumentSource(indexableSchema), textDocumentParser))
@@ -56,7 +56,7 @@ public class LangChainIndexer {
         return new IndexingResult(documents.size());
     }
 
-    record SchemaDocumentSource(IndexableSchema schema) implements DocumentSource {
+    record SchemaDocumentSource(CrawledSchema schema) implements DocumentSource {
 
         @Override
         public InputStream inputStream() throws IOException {

@@ -5,7 +5,7 @@ import ca.fuerth.ga4gh.schemaregistry.client.gscr.SchemaRecord;
 
 import java.net.URI;
 
-public record IndexableSchema(
+public record CrawledSchema(
         URI registryBaseUri,
         Namespace namespace,
         SchemaRecord schemaInfo,

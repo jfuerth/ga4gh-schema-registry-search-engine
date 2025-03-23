@@ -20,12 +20,10 @@ import static java.util.stream.Collectors.toMap;
 @Slf4j
 public class Crawler {
 
-//    private static final Logger log = LoggerFactory.getLogger(Crawler.class);
-
     @Autowired
     private GscrClient gscrClient;
 
-    public Stream<IndexableSchema> crawl(URI registryBaseUri, Predicate<String> namespaceFilter) {
+    public Stream<CrawledSchema> crawl(URI registryBaseUri, Predicate<String> namespaceFilter) {
         Map<String, Namespace> namespaces = gscrClient.getNamespaces(registryBaseUri).namespaces().stream()
                 .collect(toMap(Namespace::namespaceName, Function.identity()));
 
@@ -40,7 +38,7 @@ public class Crawler {
                     // TODO allow fetching all/older versions
                     return namespaceSchemas.schemas().stream()
                             .map(schema ->
-                                    new IndexableSchema(
+                                    new CrawledSchema(
                                             registryBaseUri,
                                             namespaces.get(namespaceSchemas.namespace()),
                                             schema,

@@ -7,8 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.net.URI;
 import java.util.List;
@@ -56,30 +54,30 @@ class CrawlerTest {
 
     @Test
     void crawl_should_findAllSchemasInAllNamespaces() {
-        Stream<IndexableSchema> schemaStream = crawler.crawl(registryBaseUri, s -> true);
+        Stream<CrawledSchema> schemaStream = crawler.crawl(registryBaseUri, s -> true);
         assertThat(schemaStream).isNotNull();
-        List<IndexableSchema> schemas = schemaStream.toList();
+        List<CrawledSchema> schemas = schemaStream.toList();
 
         assertThat(schemas).hasSize(3);
     }
 
     @Test
     void crawl_should_returnEmptyStream_when_allNamespacesAreFilteredOut() {
-        Stream<IndexableSchema> schemaStream = crawler.crawl(registryBaseUri, s -> false);
+        Stream<CrawledSchema> schemaStream = crawler.crawl(registryBaseUri, s -> false);
         assertThat(schemaStream).isNotNull();
-        List<IndexableSchema> schemas = schemaStream.toList();
+        List<CrawledSchema> schemas = schemaStream.toList();
 
         assertThat(schemas).isEmpty();
     }
 
     @Test
     void crawl_should_omitFilteredNamespaces() {
-        Stream<IndexableSchema> schemaStream = crawler.crawl(registryBaseUri, s -> s.equals("namespace-2"));
+        Stream<CrawledSchema> schemaStream = crawler.crawl(registryBaseUri, s -> s.equals("namespace-2"));
         assertThat(schemaStream).isNotNull();
-        List<IndexableSchema> schemas = schemaStream.toList();
+        List<CrawledSchema> schemas = schemaStream.toList();
 
         assertThat(schemas)
-                .extracting(IndexableSchema::namespace)
+                .extracting(CrawledSchema::namespace)
                 .extracting(Namespace::namespaceName)
                 .containsOnly("namespace-2");
     }

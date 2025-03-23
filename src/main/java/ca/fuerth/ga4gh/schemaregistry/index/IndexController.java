@@ -1,7 +1,7 @@
 package ca.fuerth.ga4gh.schemaregistry.index;
 
 import ca.fuerth.ga4gh.schemaregistry.crawler.Crawler;
-import ca.fuerth.ga4gh.schemaregistry.crawler.IndexableSchema;
+import ca.fuerth.ga4gh.schemaregistry.crawler.CrawledSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +32,7 @@ public class IndexController {
         } else {
             namespaceFilter = s -> true;
         }
-        Stream<IndexableSchema> crawledSchemas = crawler.crawl(registryUri, namespaceFilter);
+        Stream<CrawledSchema> crawledSchemas = crawler.crawl(registryUri, namespaceFilter);
         return indexer.addToIndex(crawledSchemas);
     }
 }

@@ -1,6 +1,6 @@
 * improve pgvector persistence
-  * replace/update when re-indexing the same source
   * track the source URL of each document/segment
+  * replace/update when re-indexing the same source
 
 * make the UI look nicer:
   * show "last indexed" results for each schema server and namespace
