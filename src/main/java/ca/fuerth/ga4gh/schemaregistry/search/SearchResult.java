@@ -1,4 +1,4 @@
-package ca.fuerth.ga4gh.schemaregistry.api;
+package ca.fuerth.ga4gh.schemaregistry.search;
 
 import java.util.List;
 

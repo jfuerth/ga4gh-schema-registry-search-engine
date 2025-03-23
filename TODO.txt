@@ -1,5 +1,4 @@
 * improve pgvector persistence
-  * track the source URL of each document/segment
   * replace/update when re-indexing the same source
 
 * make the UI look nicer:
@@ -21,3 +20,4 @@ DONE
 * include top-level description from inside JSON Schema as chunk metadata
 * persist indexed stuff using pgvector
 * figure out why 'smoking' no longer appears in the results: the schema endpoint returns a Data Connect table info response rather than a schema at the root.
+* track the source URL of each document/segment in the index metadata

@@ -24,10 +24,10 @@ public class JsonSchemaSplitter implements DocumentSplitter {
     public List<TextSegment> split(Document document) {
         try {
             JsonSchema schema = objectMapper.readValue(document.text(), JsonSchema.class);
-            Metadata metadata = new Metadata(Map.of(
-                    "schema.content.id", defaultIfNull(schema.getId(), "(no $id)"),
-                    "schema.content.description", defaultIfNull(schema.getDescription(), "(no description)")
-            ));
+
+            Metadata metadata = document.metadata().copy()
+                .put("schema.content.id", defaultIfNull(schema.getId(), "(no $id)"))
+                .put("schema.content.description", defaultIfNull(schema.getDescription(), "(no description)"));
 
             return schema.getProperties().entrySet().stream()
                     .map(entry -> {

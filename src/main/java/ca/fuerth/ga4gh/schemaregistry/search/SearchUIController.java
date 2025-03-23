@@ -1,4 +1,4 @@
-package ca.fuerth.ga4gh.schemaregistry.api;
+package ca.fuerth.ga4gh.schemaregistry.search;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

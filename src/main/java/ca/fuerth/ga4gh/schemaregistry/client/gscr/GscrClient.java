@@ -3,12 +3,14 @@ package ca.fuerth.ga4gh.schemaregistry.client.gscr;
 import feign.Param;
 import feign.RequestLine;
 import feign.Response;
+import feign.template.UriTemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 public interface GscrClient {
 
@@ -20,8 +22,7 @@ public interface GscrClient {
     @RequestLine("GET /namespaces")
     NamespacesResponse getNamespaces(URI registryBaseUri);
 
-    @RequestLine("GET /schemas/{namespace}/")
-        // TODO remove trailing slash when server is updated
+    @RequestLine("GET /schemas/{namespace}")
     SchemasResponse getSchemas(URI registryBaseUri,
                                @Param("namespace") String namespace);
 
@@ -40,6 +41,15 @@ public interface GscrClient {
     // maybe these paths:
     // GET /schemas/{namespace}/{schema_name}/versions/{semantic_version}/info
     // GET /schemas/{namespace}/{schema_name}/versions/{semantic_version}/schema
+
+    default URI computeSchemaVersionUri(URI baseUri, String namespace, String schemaName, String semanticVersion) {
+        UriTemplate uriTemplate = UriTemplate.create("{base_uri}/schemas/{namespace}/{schema_name}/versions/{semantic_version}", StandardCharsets.UTF_8);
+        return URI.create(uriTemplate.expand(Map.of(
+                "baseUri", baseUri.toString(),
+                "namespace", namespace,
+                "schema_name", schemaName,
+                "semantic_version", semanticVersion)));
+    }
 
     @RequestLine("GET /schemas/{namespace}/{schema_name}/versions/{semantic_version}")
     Response getJsonSchema(URI registryBaseUri,

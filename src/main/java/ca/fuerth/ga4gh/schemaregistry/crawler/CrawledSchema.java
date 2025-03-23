@@ -9,6 +9,7 @@ public record CrawledSchema(
         URI registryBaseUri,
         Namespace namespace,
         SchemaRecord schemaInfo,
+        URI schemaVersionUri,
 //        SchemaVersion schemaVersionInfo, TODO enable when there's a server implementation that does versions
         String jsonSchema
 ) {

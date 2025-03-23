@@ -42,6 +42,11 @@ public class Crawler {
                                             registryBaseUri,
                                             namespaces.get(namespaceSchemas.namespace()),
                                             schema,
+                                            gscrClient.computeSchemaVersionUri(
+                                                    registryBaseUri,
+                                                    namespaceSchemas.namespace(),
+                                                    schema.schemaName(),
+                                                    GscrClient.LATEST_VERSION),
                                             gscrClient.getJsonSchemaAsString(
                                                     registryBaseUri,
                                                     namespaceSchemas.namespace(),

@@ -66,12 +66,13 @@ public class LangChainIndexer {
         @Override
         public Metadata metadata() {
             Metadata md = new Metadata();
-            putIfNonNull(md, "registryBaseUri", schema.registryBaseUri().toString());
+            putIfNonNull(md, "registry.uri", schema.registryBaseUri().toString());
             putIfNonNull(md, "namespace.name", schema.namespace().namespaceName());
             putIfNonNull(md, "namespace.contactUrl", schema.namespace().contactUrl());
             putIfNonNull(md, "schema.name", schema.schemaInfo().schemaName());
             putIfNonNull(md, "schema.maturityLevel", schema.schemaInfo().maturityLevel());
             putIfNonNull(md, "schema.maintainers", schema.schemaInfo().maintainer().toString());
+            putIfNonNull(md, "schema.version.uri", schema.schemaVersionUri().toString());
             // TODO add all SchemaVersion properties here once we have them
             return md;
         }
