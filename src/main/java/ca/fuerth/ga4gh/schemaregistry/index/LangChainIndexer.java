@@ -2,6 +2,7 @@ package ca.fuerth.ga4gh.schemaregistry.index;
 
 import ca.fuerth.ga4gh.schemaregistry.crawler.CrawledSchema;
 import ca.fuerth.ga4gh.schemaregistry.jsonschema.JsonSchemaSplitter;
+import ca.fuerth.ga4gh.schemaregistry.shared.FailableResult;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentLoader;
 import dev.langchain4j.data.document.DocumentSource;
@@ -12,12 +13,14 @@ import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import lombok.extern.slf4j.Slf4j;
+import org.jdbi.v3.core.Jdbi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Stream;
@@ -25,6 +28,9 @@ import java.util.stream.Stream;
 @Slf4j
 @Service
 public class LangChainIndexer {
+
+    @Autowired
+    Jdbi jdbi;
 
     @Autowired
     EmbeddingModel embeddingModel;
@@ -35,25 +41,34 @@ public class LangChainIndexer {
     @Autowired
     JsonSchemaSplitter jsonSchemaSplitter;
 
-    public IndexingResult addToIndex(Stream<CrawledSchema> schemas) {
+    public int deleteAllFromRegistry(URI registryUri) {
+        return jdbi.withExtension(IndexRepository.class, repo -> repo.deleteAllFromRegistry(registryUri.toString()));
+    }
+
+    public List<FailableResult<String>> addToIndex(Stream<FailableResult<CrawledSchema>> schemas) {
         TextDocumentParser textDocumentParser = new TextDocumentParser(StandardCharsets.UTF_8);
-        List<Document> documents = schemas
-                .map(indexableSchema -> DocumentLoader.load(new SchemaDocumentSource(indexableSchema), textDocumentParser))
+        EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
+                .embeddingModel(embeddingModel)
+                .embeddingStore(embeddingStore)
+                .documentSplitter(jsonSchemaSplitter)
+                .build();
+        List<FailableResult<String>> ingestResults = schemas
+                .map(schema ->
+                   schema.map(
+                           indexableSchema -> "Loading schema for " + indexableSchema.namespace() + "/" + indexableSchema.schemaInfo().schemaName(),
+                           indexableSchema -> DocumentLoader.load(new SchemaDocumentSource(indexableSchema), textDocumentParser))
+                )
+                .map(document -> document.map(
+                        doc -> "Ingesting document " + doc,
+                        doc -> tryIngest(ingestor, doc)))
                 .toList();
 
-        if (documents.isEmpty()) {
-            // EmbeddingStoreIngestor throws an exception if you ask it to index nothing
-            log.info("Found no documents in IndexableSchema stream. Skipping ingestion.");
-        } else {
-            EmbeddingStoreIngestor.builder()
-                    .embeddingModel(embeddingModel)
-                    .embeddingStore(embeddingStore)
-                    .documentSplitter(jsonSchemaSplitter)
-                    .build()
-                    .ingest(documents);
-        }
+        return ingestResults;
+    }
 
-        return new IndexingResult(documents.size());
+    private static String tryIngest(EmbeddingStoreIngestor ingestor, Document document) {
+        ingestor.ingest(document);
+        return "Ingested " + document.metadata().getString("namespace.name") + "/" + document.metadata().getString("schema.name");
     }
 
     record SchemaDocumentSource(CrawledSchema schema) implements DocumentSource {

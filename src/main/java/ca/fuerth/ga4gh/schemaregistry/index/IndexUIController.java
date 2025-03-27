@@ -1,5 +1,6 @@
 package ca.fuerth.ga4gh.schemaregistry.index;
 
+import ca.fuerth.ga4gh.schemaregistry.shared.FailableResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
+import java.util.List;
 
 @Controller
 @RequestMapping("/ui")
@@ -28,7 +30,7 @@ public class IndexUIController {
                                      @RequestParam(value = "includeNamespaces", required = false) String includeNamespaces,
                                      Model model) {
         
-        IndexingResult result = indexController.addRegistryToIndex(registryUri, includeNamespaces);
+        List<FailableResult<String>> result = indexController.addRegistryToIndex(registryUri, includeNamespaces);
         model.addAttribute("indexingResult", result);
         
         return "indexForm";

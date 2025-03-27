@@ -17,7 +17,13 @@
 
 <div th:if="${indexingResult}">
     <h2>Indexing Result</h2>
-    <p>Documents Added: <span th:text="${indexingResult.documentsAdded}"></span></p>
+    <p>Documents Added:</p>
+    <ul>
+        <li th:each="result : ${indexingResult}">
+            <span th:if="${result.isSuccess}" th:text="${result.result}"></span>
+            <span th:if="${result.isFailed}" th:text="${result.errorMessage}"></span>
+        </li>
+    </ul>
 </div>
 </body>
 </html>

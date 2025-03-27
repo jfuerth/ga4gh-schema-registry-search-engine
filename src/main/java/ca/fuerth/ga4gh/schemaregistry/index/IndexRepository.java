@@ -1,6 +1,7 @@
 package ca.fuerth.ga4gh.schemaregistry.index;
 
 import org.jdbi.v3.sqlobject.config.RegisterConstructorMapper;
+import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindMethods;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
@@ -21,4 +22,9 @@ public interface IndexRepository {
         values (:createdAt, :embeddingModelClass, :embeddingDimensions)
         """)
     void setIndexInfo(@BindMethods IndexStorageSettings indexStorageSettings);
+
+    @SqlUpdate("""
+            DELETE FROM index_storage WHERE metadata->>'registry.uri' = :registryBaseUri
+            """)
+    int deleteAllFromRegistry(@Bind String registryBaseUri);
 }

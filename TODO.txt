@@ -1,17 +1,10 @@
-* improve pgvector persistence
-  * replace/update when re-indexing the same source
+* Index UI: render successes and errors better (colour codes, include exception message)
 * Search UI: show stats on the welcome page about how many sites, indexes, and properties are in the index
 * make the Indexing UI look nicer:
   * show "last indexed" results for each schema server and namespace
     * provide a "reindex" button (depends on "improve pgvector persistence")
   * navigation sidebar
   * line up index form fields
-  * render errors
-* handle errors better
-  * let the indexing pipeline return Either<Error, IndexableSchema>
-    * errors: IO problems, remote HTTP errors, JSON parse errors
-    * notices: skipped namespaces or schemas that didn't match the filter
-  * bubble these up to the top result
 
 DONE
 * split the schema documents by JSON Schema property (hook in at EmbeddingStoreIngestor.builder())
@@ -21,3 +14,9 @@ DONE
 * track the source URL of each document/segment in the index metadata
 * Search UI: material CSS
 * Search UI: show link to source schema registry in search results
+* replace/update when re-indexing the same source
+* handle errors better
+  * let the indexing pipeline return Either<Error, IndexableSchema>
+    * errors: IO problems, remote HTTP errors, JSON parse errors
+    * notices: skipped namespaces or schemas that didn't match the filter
+  * bubble these up to the top result

@@ -2,6 +2,7 @@ package ca.fuerth.ga4gh.schemaregistry.crawler;
 
 import ca.fuerth.ga4gh.schemaregistry.client.gscr.Namespace;
 import ca.fuerth.ga4gh.schemaregistry.client.gscr.SchemasResponse;
+import ca.fuerth.ga4gh.schemaregistry.shared.FailableResult;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,7 +31,7 @@ class CrawlerE2eTest {
 
         List<SchemasResponse> ns1Schemas = List.of();
 
-        Stream<CrawledSchema> indexableSchemas = crawler.crawl(registryBaseUri, s -> !s.equals("dbGaP"));
+        Stream<FailableResult<CrawledSchema>> indexableSchemas = crawler.crawl(registryBaseUri, s -> !s.equals("dbGaP"));
         assertThat(indexableSchemas).isNotNull();
         indexableSchemas.forEach(System.out::println);
     }

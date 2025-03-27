@@ -1,6 +1,7 @@
 package ca.fuerth.ga4gh.schemaregistry.crawler;
 
 import ca.fuerth.ga4gh.schemaregistry.client.gscr.*;
+import ca.fuerth.ga4gh.schemaregistry.shared.FailableResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,29 +55,30 @@ class CrawlerTest {
 
     @Test
     void crawl_should_findAllSchemasInAllNamespaces() {
-        Stream<CrawledSchema> schemaStream = crawler.crawl(registryBaseUri, s -> true);
+        Stream<FailableResult<CrawledSchema>> schemaStream = crawler.crawl(registryBaseUri, s -> true);
         assertThat(schemaStream).isNotNull();
-        List<CrawledSchema> schemas = schemaStream.toList();
+        List<FailableResult<CrawledSchema>> schemas = schemaStream.toList();
 
         assertThat(schemas).hasSize(3);
     }
 
     @Test
     void crawl_should_returnEmptyStream_when_allNamespacesAreFilteredOut() {
-        Stream<CrawledSchema> schemaStream = crawler.crawl(registryBaseUri, s -> false);
+        Stream<FailableResult<CrawledSchema>> schemaStream = crawler.crawl(registryBaseUri, s -> false);
         assertThat(schemaStream).isNotNull();
-        List<CrawledSchema> schemas = schemaStream.toList();
+        List<FailableResult<CrawledSchema>> schemas = schemaStream.toList();
 
         assertThat(schemas).isEmpty();
     }
 
     @Test
     void crawl_should_omitFilteredNamespaces() {
-        Stream<CrawledSchema> schemaStream = crawler.crawl(registryBaseUri, s -> s.equals("namespace-2"));
+        Stream<FailableResult<CrawledSchema>> schemaStream = crawler.crawl(registryBaseUri, s -> s.equals("namespace-2"));
         assertThat(schemaStream).isNotNull();
-        List<CrawledSchema> schemas = schemaStream.toList();
+        List<FailableResult<CrawledSchema>> schemas = schemaStream.toList();
 
         assertThat(schemas)
+                .map(FailableResult::result)
                 .extracting(CrawledSchema::namespace)
                 .extracting(Namespace::namespaceName)
                 .containsOnly("namespace-2");

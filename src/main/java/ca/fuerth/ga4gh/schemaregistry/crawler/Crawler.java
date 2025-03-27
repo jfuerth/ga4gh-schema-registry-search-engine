@@ -4,7 +4,9 @@ import ca.fuerth.ga4gh.schemaregistry.client.gscr.GscrClient;
 import ca.fuerth.ga4gh.schemaregistry.client.gscr.Namespace;
 import ca.fuerth.ga4gh.schemaregistry.client.gscr.SchemaRecord;
 import ca.fuerth.ga4gh.schemaregistry.client.gscr.SchemasResponse;
+import ca.fuerth.ga4gh.schemaregistry.shared.FailableResult;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +25,7 @@ public class Crawler {
     @Autowired
     private GscrClient gscrClient;
 
-    public Stream<CrawledSchema> crawl(URI registryBaseUri, Predicate<String> namespaceFilter) {
+    public Stream<FailableResult<CrawledSchema>> crawl(URI registryBaseUri, Predicate<String> namespaceFilter) {
         Map<String, Namespace> namespaces = gscrClient.getNamespaces(registryBaseUri).namespaces().stream()
                 .collect(toMap(Namespace::namespaceName, Function.identity()));
 
@@ -37,23 +39,29 @@ public class Crawler {
                     // Just fetching the latest version of each schema for now
                     // TODO allow fetching all/older versions
                     return namespaceSchemas.schemas().stream()
-                            .map(schema ->
-                                    new CrawledSchema(
-                                            registryBaseUri,
-                                            namespaces.get(namespaceSchemas.namespace()),
-                                            schema,
-                                            gscrClient.computeSchemaVersionUri(
-                                                    registryBaseUri,
-                                                    namespaceSchemas.namespace(),
-                                                    schema.schemaName(),
-                                                    GscrClient.LATEST_VERSION),
-                                            gscrClient.getJsonSchemaAsString(
-                                                    registryBaseUri,
-                                                    namespaceSchemas.namespace(),
-                                                    schema.schemaName(),
-                                                    GscrClient.LATEST_VERSION)));
+                            .map(schema -> crawlNamespace(registryBaseUri, namespaceSchemas, schema, namespaces));
                 })
                 .peek(indexableSchema -> log.debug("Found {}", indexableSchema));
+    }
+
+    @NotNull
+    private FailableResult<CrawledSchema> crawlNamespace(URI registryBaseUri, SchemasResponse namespaceSchemas, SchemaRecord schema, Map<String, Namespace> namespaces) {
+        return FailableResult.of(
+                "crawling " + schema.schemaName(),
+                () -> new CrawledSchema(
+                        registryBaseUri,
+                        namespaces.get(namespaceSchemas.namespace()),
+                        schema,
+                        gscrClient.computeSchemaVersionUri(
+                                registryBaseUri,
+                                namespaceSchemas.namespace(),
+                                schema.schemaName(),
+                                GscrClient.LATEST_VERSION),
+                        gscrClient.getJsonSchemaAsString(
+                                registryBaseUri,
+                                namespaceSchemas.namespace(),
+                                schema.schemaName(),
+                                GscrClient.LATEST_VERSION)));
     }
 
 
