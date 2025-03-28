@@ -4,6 +4,7 @@ import ca.fuerth.ga4gh.schemaregistry.client.gscr.Namespace;
 import ca.fuerth.ga4gh.schemaregistry.client.gscr.SchemasResponse;
 import ca.fuerth.ga4gh.schemaregistry.shared.FailableResult;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -21,6 +22,7 @@ class CrawlerE2eTest {
     Crawler crawler;
 
     @Test
+    @EnabledIfEnvironmentVariable(named="E2E_REGISTRY_BASE_URI", matches=".+")
     void crawl_should_findAllSchemasInAllNamespaces() {
         URI registryBaseUri = URI.create(requiredEnv("E2E_REGISTRY_BASE_URI"));
 
