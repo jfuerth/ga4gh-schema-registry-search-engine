@@ -86,6 +86,16 @@
 			<artifactId>letsencrypt-helper-tomcat</artifactId>
 			<version>0.4.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.shredzone.acme4j</groupId>
+			<artifactId>acme4j-client</artifactId>
+			<version>3.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk18on</artifactId>
+			<version>1.80</version>
+		</dependency>
 
 		<!-- JDBC datastore -->
 		<dependency>
