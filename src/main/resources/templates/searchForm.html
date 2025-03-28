@@ -61,7 +61,7 @@
 <div th:if="${searchResult == null}" class="container-centered">
     <h4>Search Schema Registries</h4>
     <p>Enter a few words to find schemas with similar concepts.</p>
-    <form th:action="@{/ui/search}" method="post" class="search-container">
+    <form th:action="@{/}" method="get" class="search-container">
         <div class="input-field" style="width: 100%;">
             <input type="text" id="query" name="q" required>
             <label for="query">Search for...</label>
@@ -72,7 +72,7 @@
 
 <div th:if="${searchResult != null}">
     <div class="search-bar">
-        <form th:action="@{/ui/search}" method="post" class="search-container" style="display: flex; width: 100%;">
+        <form th:action="@{/}" method="get" class="search-container" style="display: flex; width: 100%;">
             <div class="input-field" style="flex-grow: 1;">
                 <input type="text" id="query" name="q" th:value="${query}" required>
                 <label for="query">Search Terms</label>

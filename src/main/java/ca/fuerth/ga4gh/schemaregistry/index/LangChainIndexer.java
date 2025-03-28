@@ -52,18 +52,23 @@ public class LangChainIndexer {
                 .embeddingStore(embeddingStore)
                 .documentSplitter(jsonSchemaSplitter)
                 .build();
-        List<FailableResult<String>> ingestResults = schemas
-                .map(schema ->
-                   schema.map(
-                           indexableSchema -> "Loading schema for " + indexableSchema.namespace() + "/" + indexableSchema.schemaInfo().schemaName(),
-                           indexableSchema -> DocumentLoader.load(new SchemaDocumentSource(indexableSchema), textDocumentParser))
-                )
-                .map(document -> document.map(
-                        doc -> "Ingesting document " + doc,
-                        doc -> tryIngest(ingestor, doc)))
-                .toList();
 
-        return ingestResults;
+        return schemas
+                .map(fSchema ->
+                        fSchema.map(
+                                schema -> "loading schema for " + schema.namespace() + "/" + schema.schemaInfo().schemaName(),
+                                schema -> DocumentLoader.load(new SchemaDocumentSource(schema), textDocumentParser))
+                )
+                .map(fDocument ->
+                        fDocument.map(
+                                doc -> "ingesting document " + doc,
+                                doc -> tryIngest(ingestor, doc)))
+                .peek(failableResult -> {
+                    if (failableResult.isFailed()) {
+                        log.info("Failure during indexing: {}", failableResult.errorMessage(), failableResult.exception());
+                    }
+                })
+                .toList();
     }
 
     private static String tryIngest(EmbeddingStoreIngestor ingestor, Document document) {

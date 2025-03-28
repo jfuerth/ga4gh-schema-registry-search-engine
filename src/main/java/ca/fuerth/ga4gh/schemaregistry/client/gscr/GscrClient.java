@@ -12,6 +12,8 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import static java.util.Objects.requireNonNull;
+
 public interface GscrClient {
 
     /**
@@ -46,9 +48,9 @@ public interface GscrClient {
         UriTemplate uriTemplate = UriTemplate.create("/schemas/{namespace}/{schema_name}/versions/{semantic_version}", StandardCharsets.UTF_8);
         return baseUri.resolve(uriTemplate.expand(Map.of(
                 "base_uri", baseUri.toString(),
-                "namespace", namespace,
-                "schema_name", schemaName,
-                "semantic_version", semanticVersion)));
+                "namespace", requireNonNull(namespace, "namespace is null"),
+                "schema_name", requireNonNull(schemaName, "schema_name is null"),
+                "semantic_version", requireNonNull(semanticVersion, "semantic_version is null"))));
     }
 
     @RequestLine("GET /schemas/{namespace}/{schema_name}/versions/{semantic_version}")

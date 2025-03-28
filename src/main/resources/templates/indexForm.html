@@ -21,7 +21,7 @@
     <ul>
         <li th:each="result : ${indexingResult}">
             <span th:if="${result.isSuccess}" th:text="${result.result}"></span>
-            <span th:if="${result.isFailed}" th:text="${result.errorMessage}"></span>
+            <span th:if="${result.isFailed}" th:text="|Error ${result.errorMessage}: ${result.exception}|"></span>
         </li>
     </ul>
 </div>
