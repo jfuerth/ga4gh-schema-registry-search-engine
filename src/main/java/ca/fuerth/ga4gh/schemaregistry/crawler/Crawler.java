@@ -26,6 +26,7 @@ public class Crawler {
     private GscrClient gscrClient;
 
     public Stream<FailableResult<CrawledSchema>> crawl(URI registryBaseUri, Predicate<String> namespaceFilter) {
+        // TODO make this part of the FailableResult chain so we get a good error when it fails
         Map<String, Namespace> namespaces = gscrClient.getNamespaces(registryBaseUri).namespaces().stream()
                 .collect(toMap(Namespace::namespaceName, Function.identity()));
 
@@ -33,41 +34,59 @@ public class Crawler {
 
         return namespaces.keySet().stream()
                 .filter(namespaceFilter)
-                .map(ns -> gscrClient.getSchemas(registryBaseUri, ns))
+                .map(ns -> FailableResult.of(
+                        "getting namespace " + ns,
+                        () -> gscrClient.getSchemas(registryBaseUri, ns)))
                 .peek(Crawler::logSchemasResponse)
-                .flatMap(namespaceSchemas -> {
-                    // Just fetching the latest version of each schema for now
-                    // TODO allow fetching all/older versions
-                    return namespaceSchemas.schemas().stream()
-                            .map(schema -> crawlNamespace(registryBaseUri, namespaceSchemas, schema, namespaces));
-                })
-                .peek(indexableSchema -> log.debug("Found {}", indexableSchema));
+                .flatMap(Crawler::expandToSchemaStream)
+                .map(fSchema -> downloadJsonSchema(registryBaseUri, fSchema, namespaces))
+                .peek(crawledSchema -> log.debug("Hydrated with JSON Schema {}", crawledSchema));
     }
 
     @NotNull
-    private FailableResult<CrawledSchema> crawlNamespace(URI registryBaseUri, SchemasResponse namespaceSchemas, SchemaRecord schema, Map<String, Namespace> namespaces) {
-        return FailableResult.of(
-                "crawling " + schema.schemaName(),
-                () -> new CrawledSchema(
+    private static Stream<FailableResult<NamespaceSchema>> expandToSchemaStream(FailableResult<SchemasResponse> fSchemasResponse) {
+        return fSchemasResponse.flatten(
+                schemasResponse -> "iterating schemas of namespace " + schemasResponse.namespace(),
+                schemasResponse -> schemasResponse.schemas().stream()
+                        .map(s -> new NamespaceSchema(schemasResponse.namespace(), s)));
+    }
+
+    @NotNull
+    private FailableResult<CrawledSchema> downloadJsonSchema(URI registryBaseUri, FailableResult<NamespaceSchema> fSchema, Map<String, Namespace> namespaces) {
+        // Just fetching the latest version of each schema for now
+        // TODO allow fetching all/older versions
+        return fSchema.map(
+                failedSchema -> "fetching JSON schema %s/%s ".formatted(failedSchema.namespace(), failedSchema.schemaRecord().schemaName()),
+                schema -> retrieveSchema(registryBaseUri, schema, namespaces));
+    }
+
+    // TODO this is just a workaround for the SchemaRecord not having the namespace in it
+    record NamespaceSchema(String namespace, SchemaRecord schemaRecord) {}
+
+    @NotNull
+    private CrawledSchema retrieveSchema(URI registryBaseUri, NamespaceSchema schema, Map<String, Namespace> namespaces) {
+        return new CrawledSchema(
+                registryBaseUri,
+                namespaces.get(schema.namespace()),
+                schema.schemaRecord(),
+                gscrClient.computeSchemaVersionUri(
                         registryBaseUri,
-                        namespaces.get(namespaceSchemas.namespace()),
-                        schema,
-                        gscrClient.computeSchemaVersionUri(
-                                registryBaseUri,
-                                namespaceSchemas.namespace(),
-                                schema.schemaName(),
-                                GscrClient.LATEST_VERSION),
-                        gscrClient.getJsonSchemaAsString(
-                                registryBaseUri,
-                                namespaceSchemas.namespace(),
-                                schema.schemaName(),
-                                GscrClient.LATEST_VERSION)));
+                        schema.namespace(),
+                        schema.schemaRecord().schemaName(),
+                        GscrClient.LATEST_VERSION),
+                gscrClient.getJsonSchemaAsString(
+                        registryBaseUri,
+                        schema.namespace(),
+                        schema.schemaRecord().schemaName(),
+                        GscrClient.LATEST_VERSION));
     }
 
 
-    private static void logSchemasResponse(SchemasResponse schemasPerNamespace) {
-        for (SchemaRecord schema : schemasPerNamespace.schemas()) {
-            log.debug("Namespace {}: Schema {}", schemasPerNamespace.namespace(), schema);
+    private static void logSchemasResponse(FailableResult<SchemasResponse> schemasPerNamespace) {
+        if (schemasPerNamespace.isSuccess()) {
+            for (SchemaRecord schema : schemasPerNamespace.result().schemas()) {
+                log.debug("Namespace {}: Schema {}", schemasPerNamespace.result().namespace(), schema);
+            }
         }
     }
 }

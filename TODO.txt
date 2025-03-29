@@ -1,4 +1,3 @@
-* Index UI: render successes and errors better (colour codes, include exception message)
 * Search UI: show stats on the welcome page about how many sites, indexes, and properties are in the index
 * make the Indexing UI look nicer:
   * show "last indexed" results for each schema server and namespace
@@ -20,3 +19,4 @@ DONE
     * errors: IO problems, remote HTTP errors, JSON parse errors
     * notices: skipped namespaces or schemas that didn't match the filter
   * bubble these up to the top result
+* Index UI: render successes and errors better (colour codes, include exception message)

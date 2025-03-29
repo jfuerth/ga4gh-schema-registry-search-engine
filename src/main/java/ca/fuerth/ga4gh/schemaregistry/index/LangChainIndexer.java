@@ -14,6 +14,7 @@ import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,40 +30,28 @@ import java.util.stream.Stream;
 @Service
 public class LangChainIndexer {
 
-    @Autowired
-    Jdbi jdbi;
+    private final Jdbi jdbi;
+    private final TextDocumentParser textDocumentParser = new TextDocumentParser(StandardCharsets.UTF_8);
+    private final EmbeddingStoreIngestor ingestor;
 
     @Autowired
-    EmbeddingModel embeddingModel;
-
-    @Autowired
-    EmbeddingStore<TextSegment> embeddingStore;
-
-    @Autowired
-    JsonSchemaSplitter jsonSchemaSplitter;
+    public LangChainIndexer(Jdbi jdbi, EmbeddingModel embeddingModel, EmbeddingStore<TextSegment> embeddingStore, JsonSchemaSplitter jsonSchemaSplitter) {
+        this.jdbi = jdbi;
+        ingestor = EmbeddingStoreIngestor.builder()
+                .embeddingModel(embeddingModel)
+                .embeddingStore(embeddingStore)
+                .documentSplitter(jsonSchemaSplitter)
+                .build();
+    }
 
     public int deleteAllFromRegistry(URI registryUri) {
         return jdbi.withExtension(IndexRepository.class, repo -> repo.deleteAllFromRegistry(registryUri.toString()));
     }
 
     public List<FailableResult<String>> addToIndex(Stream<FailableResult<CrawledSchema>> schemas) {
-        TextDocumentParser textDocumentParser = new TextDocumentParser(StandardCharsets.UTF_8);
-        EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
-                .embeddingModel(embeddingModel)
-                .embeddingStore(embeddingStore)
-                .documentSplitter(jsonSchemaSplitter)
-                .build();
-
         return schemas
-                .map(fSchema ->
-                        fSchema.map(
-                                schema -> "loading schema for " + schema.namespace() + "/" + schema.schemaInfo().schemaName(),
-                                schema -> DocumentLoader.load(new SchemaDocumentSource(schema), textDocumentParser))
-                )
-                .map(fDocument ->
-                        fDocument.map(
-                                doc -> "ingesting document " + doc,
-                                doc -> tryIngest(ingestor, doc)))
+                .map(this::parseSchemaToDocument)
+                .map(this::ingestDocument)
                 .peek(failableResult -> {
                     if (failableResult.isFailed()) {
                         log.info("Failure during indexing: {}", failableResult.errorMessage(), failableResult.exception());
@@ -71,9 +60,21 @@ public class LangChainIndexer {
                 .toList();
     }
 
-    private static String tryIngest(EmbeddingStoreIngestor ingestor, Document document) {
-        ingestor.ingest(document);
-        return "Ingested " + document.metadata().getString("namespace.name") + "/" + document.metadata().getString("schema.name");
+    @NotNull
+    private FailableResult<Document> parseSchemaToDocument(FailableResult<CrawledSchema> fSchema) {
+        return fSchema.map(
+                failedSchema -> "loading schema for " + failedSchema.namespace() + "/" + failedSchema.schemaRecord().schemaName(),
+                schema -> DocumentLoader.load(new SchemaDocumentSource(schema), textDocumentParser));
+    }
+
+    @NotNull
+    private FailableResult<String> ingestDocument(FailableResult<Document> fDocument) {
+        return fDocument.map(
+                failedDoc -> "ingesting document " + failedDoc,
+                doc -> {
+                    ingestor.ingest(doc);
+                    return "Ingested " + doc.metadata().getString("namespace.name") + "/" + doc.metadata().getString("schema.name");
+                });
     }
 
     record SchemaDocumentSource(CrawledSchema schema) implements DocumentSource {
@@ -89,9 +90,9 @@ public class LangChainIndexer {
             putIfNonNull(md, "registry.uri", schema.registryBaseUri().toString());
             putIfNonNull(md, "namespace.name", schema.namespace().namespaceName());
             putIfNonNull(md, "namespace.contactUrl", schema.namespace().contactUrl());
-            putIfNonNull(md, "schema.name", schema.schemaInfo().schemaName());
-            putIfNonNull(md, "schema.maturityLevel", schema.schemaInfo().maturityLevel());
-            putIfNonNull(md, "schema.maintainers", schema.schemaInfo().maintainer().toString());
+            putIfNonNull(md, "schema.name", schema.schemaRecord().schemaName());
+            putIfNonNull(md, "schema.maturityLevel", schema.schemaRecord().maturityLevel());
+            putIfNonNull(md, "schema.maintainers", schema.schemaRecord().maintainer().toString());
             putIfNonNull(md, "schema.version.uri", schema.schemaVersionUri().toString());
             // TODO add all SchemaVersion properties here once we have them
             return md;

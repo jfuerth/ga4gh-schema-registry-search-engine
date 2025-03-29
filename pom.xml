@@ -172,6 +172,13 @@
 			<artifactId>logging-interceptor</artifactId>
 		</dependency>
 
+		<!-- Validation -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>8.0.1.Final</version>
+		</dependency>
+
 		<!-- Indexing and fuzzy retrieval -->
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
