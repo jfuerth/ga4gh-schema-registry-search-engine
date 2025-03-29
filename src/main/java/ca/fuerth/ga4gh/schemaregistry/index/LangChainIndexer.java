@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -49,7 +50,7 @@ public class LangChainIndexer {
     }
 
     public List<FailableResult<String>> addToIndex(Stream<FailableResult<CrawledSchema>> schemas) {
-        return schemas
+        List<FailableResult<String>> indexingResults = schemas
                 .map(this::parseSchemaToDocument)
                 .map(this::ingestDocument)
                 .peek(failableResult -> {
@@ -58,6 +59,15 @@ public class LangChainIndexer {
                     }
                 })
                 .toList();
+        if (hasAnySuccess(indexingResults)) {
+            log.info("Indexing complete. Refreshing statistics...");
+            jdbi.useExtension(IndexRepository.class, IndexRepository::refreshStatistics);
+        }
+        return indexingResults;
+    }
+
+    private boolean hasAnySuccess(Collection<? extends FailableResult<?>> failableResults) {
+        return failableResults.stream().anyMatch(FailableResult::isSuccess);
     }
 
     @NotNull

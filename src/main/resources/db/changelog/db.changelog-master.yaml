@@ -17,3 +17,16 @@ databaseChangeLog:
               - column:
                   name:  embedding_dimensions
                   type:  integer
+  - changeSet:
+      id: index-stats-materialized-view
+      author: jf
+      failOnError: false # the table is created by LangChain4j so it won't exist on the first run
+      changes:
+        - sql:
+            sql: |
+              CREATE MATERIALIZED VIEW mv_registry_schema_counts AS
+                SELECT
+                count(distinct metadata ->> 'registry.uri') AS registry_count,
+                count(distinct metadata ->> 'schema.name') AS schema_count,
+                count(*) AS schema_fragment_count
+                FROM index_storage;

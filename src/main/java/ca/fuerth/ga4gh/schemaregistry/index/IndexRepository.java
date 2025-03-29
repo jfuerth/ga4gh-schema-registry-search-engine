@@ -29,12 +29,12 @@ public interface IndexRepository {
     int deleteAllFromRegistry(@Bind String registryBaseUri);
 
     @SqlQuery("""
-            SELECT
-                count(distinct metadata ->> 'registry.uri') AS registry_count,
-                count(distinct metadata ->> 'schema.name') AS schema_count,
-                count(*) AS schema_fragment_count
-            FROM index_storage
+            SELECT *
+            FROM mv_registry_schema_counts
             """)
     @RegisterConstructorMapper(IndexStatistics.class)
     IndexStatistics getStatistics();
+
+    @SqlUpdate("REFRESH MATERIALIZED VIEW mv_registry_schema_counts")
+    void refreshStatistics();
 }
