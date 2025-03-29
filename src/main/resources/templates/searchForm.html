@@ -52,11 +52,7 @@
 </head>
 <body class="container">
 
-<nav>
-    <div class="nav-wrapper">
-        <a href="#" class="brand-logo">Schema Search</a>
-    </div>
-</nav>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
 
 <div th:if="${searchResult == null}" class="container-centered">
     <h4>Search Schema Registries</h4>

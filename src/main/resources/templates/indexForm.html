@@ -2,28 +2,63 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Index Registry</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        .result-list {
+            margin-top: 20px;
+            padding: 10px;
+        }
+        .result-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .result-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        .success { color: green; }
+        .failure { color: red; }
+        .summary {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
 </head>
-<body>
+<body class="container">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
 <h1>Index a Registry</h1>
-<form action="#" th:action="@{/ui/index}" method="post">
+<form action="#" th:action="@{/index}" method="post">
     <label for="registryUri">Registry URI:</label>
     <input type="text" id="registryUri" name="registryUri" required>
     <br>
     <label for="includeNamespaces">Include Namespaces (optional):</label>
     <input type="text" id="includeNamespaces" name="includeNamespaces">
     <br>
-    <button type="submit">Submit</button>
+    <button type="submit" class="btn waves-effect waves-light">Submit</button>
 </form>
 
-<div th:if="${indexingResult}">
+<div th:if="${indexingResult}" class="result-list">
     <h2>Indexing Result</h2>
-    <p>Documents Added:</p>
     <ul>
-        <li th:each="result : ${indexingResult}">
-            <span th:if="${result.isSuccess}" th:text="${result.result}"></span>
-            <span th:if="${result.isFailed}" th:text="|Error ${result.errorMessage}: ${result.exception}|"></span>
+        <li th:each="result : ${indexingResult}" class="result-item">
+            <span class="result-icon success" th:if="${result.isSuccess}">✅</span>
+            <span class="result-icon failure" th:if="${result.isFailed}">❌</span>
+            <span th:text="${result.isSuccess ? result.result : 'Error ' + result.errorMessage + ': ' + result.exception}"></span>
         </li>
     </ul>
+    <div class="summary">
+        <span>Total Successes: <span th:text="${indexingResult.?[isSuccess].size()}"></span></span>
+        |
+        <span>Total Failures: <span th:text="${indexingResult.?[isFailed].size()}"></span></span>
+    </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>
 </html>
