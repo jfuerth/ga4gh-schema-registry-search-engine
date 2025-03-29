@@ -1,0 +1,79 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+}
+
+.centered-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+    padding-left: 10px;
+    font-size: smaller;
+}
+
+nav .brand-logo {
+    padding-left: 20px;
+    text-wrap: nowrap;
+    font-size: smaller;
+    text-align: left;
+}
+
+.result-list {
+    margin-top: 20px;
+    padding: 10px;
+}
+
+.result-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.result-icon {
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+.success {
+    color: green;
+}
+
+.failure {
+    color: red;
+}
+
+.summary {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    margin-top: 10px;
+}

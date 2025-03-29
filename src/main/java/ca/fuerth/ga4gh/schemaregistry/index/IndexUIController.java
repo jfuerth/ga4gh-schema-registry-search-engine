@@ -1,6 +1,7 @@
 package ca.fuerth.ga4gh.schemaregistry.index;
 
 import ca.fuerth.ga4gh.schemaregistry.shared.FailableResult;
+import org.jdbi.v3.core.Jdbi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,12 +12,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class IndexUIController {
 
     @Autowired
     private IndexController indexController;
+
+    @Autowired
+    private Jdbi jdbi;
 
     @GetMapping("/index")
     public String showIndexForm(Model model) {
@@ -31,7 +36,7 @@ public class IndexUIController {
         
         List<FailableResult<String>> result = indexController.addRegistryToIndex(registryUri, includeNamespaces);
         model.addAttribute("indexingResult", result);
-        
+
         return "indexForm";
     }
 }

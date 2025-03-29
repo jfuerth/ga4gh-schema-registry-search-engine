@@ -3,12 +3,13 @@
 <head>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
 <nav th:fragment="navbar">
     <div class="nav-wrapper">
-        <a href="#" class="brand-logo" style="padding-left: 20px;">Schema Tools</a>
-        <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <a href="#" class="brand-logo" style="padding-left: 20px;">GA4GH Schema Registry Search</a>
+        <ul id="nav-mobile" class="right">
             <li><a th:href="@{/}">Search</a></li>
             <li><a th:href="@{/index}">Index</a></li>
         </ul>

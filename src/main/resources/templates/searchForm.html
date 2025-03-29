@@ -12,7 +12,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 80vh;
+            height: 40vh;
             text-align: center;
         }
         .search-container {
@@ -45,8 +45,13 @@
             align-items: center;
             justify-content: space-between;
         }
-        .nav-wrapper {
-            padding-left: 20px;
+        .learn-more {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .index-statistics {
+            text-align: center;
+            color: #888;
         }
     </style>
 </head>
@@ -55,15 +60,20 @@
 <nav th:replace="~{fragments/navbar :: navbar}"></nav>
 
 <div th:if="${searchResult == null}" class="container-centered">
-    <h4>Search Schema Registries</h4>
-    <p>Enter a few words to find schemas with similar concepts.</p>
+    <p class="index-statistics" th:text="|Search ${indexStatistics.schemaFragmentCount()} schema properties across ${indexStatistics.schemaCount()} schemas in ${indexStatistics.registryCount()} ${indexStatistics.registryCount() == 1 ? 'Schema Registry' : 'Schema Registries'}|">
+    </p>
+    <p>Enter a word or phrase to find schemas with similar concepts.</p>
     <form th:action="@{/}" method="get" class="search-container">
         <div class="input-field" style="width: 100%;">
             <input type="text" id="query" name="q" required>
             <label for="query">Search for...</label>
         </div>
-        <button class="btn waves-effect waves-light" type="submit">Search</button>
+        <button class="btn waves-effect waves-light" type="submit">Fuzzy Concept Search</button>
     </form>
+</div>
+
+<div class="learn-more">
+    <a href="">Learn more about GA4GH Schema Registry</a>
 </div>
 
 <div th:if="${searchResult != null}">

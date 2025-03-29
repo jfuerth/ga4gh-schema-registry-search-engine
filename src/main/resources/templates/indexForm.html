@@ -4,6 +4,7 @@
     <title>Index Registry</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style>
         .result-list {
@@ -32,7 +33,7 @@
 
 <nav th:replace="~{fragments/navbar :: navbar}"></nav>
 
-<h1>Index a Registry</h1>
+<h1>Add a Registry to the Index</h1>
 <form action="#" th:action="@{/index}" method="post">
     <label for="registryUri">Registry URI:</label>
     <input type="text" id="registryUri" name="registryUri" required>

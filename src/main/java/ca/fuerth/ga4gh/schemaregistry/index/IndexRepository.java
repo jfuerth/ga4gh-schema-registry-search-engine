@@ -10,16 +10,16 @@ import java.util.Optional;
 
 public interface IndexRepository {
 
-    @SqlQuery("select * from index_storage_settings")
+    @SqlQuery("SELECT * FROM index_storage_settings")
     @RegisterConstructorMapper(IndexStorageSettings.class)
     Optional<IndexStorageSettings> getIndexStorageSettings();
 
-    @SqlUpdate("delete from index_storage_settings")
+    @SqlUpdate("DELETE FROM index_storage_settings")
     void clearIndexInfo();
 
     @SqlUpdate("""
-        insert into index_storage_settings (created_at, embedding_model_class, embedding_dimensions)
-        values (:createdAt, :embeddingModelClass, :embeddingDimensions)
+        INSERT INTO index_storage_settings (created_at, embedding_model_class, embedding_dimensions)
+        VALUES (:createdAt, :embeddingModelClass, :embeddingDimensions)
         """)
     void setIndexInfo(@BindMethods IndexStorageSettings indexStorageSettings);
 
@@ -27,4 +27,14 @@ public interface IndexRepository {
             DELETE FROM index_storage WHERE metadata->>'registry.uri' = :registryBaseUri
             """)
     int deleteAllFromRegistry(@Bind String registryBaseUri);
+
+    @SqlQuery("""
+            SELECT
+                count(distinct metadata ->> 'registry.uri') AS registry_count,
+                count(distinct metadata ->> 'schema.name') AS schema_count,
+                count(*) AS schema_fragment_count
+            FROM index_storage
+            """)
+    @RegisterConstructorMapper(IndexStatistics.class)
+    IndexStatistics getStatistics();
 }

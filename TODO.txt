@@ -1,9 +1,8 @@
-* Search UI: show stats on the welcome page about how many sites, indexes, and properties are in the index
-* make the Indexing UI look nicer:
+* Search UI: show stats on the welcome page about how many sites, schemas, and schema fragments are in the index
+* clear reindexed schemas by registry+namespace, not whole registry
+* enhance the Indexing UI functionality:
   * show "last indexed" results for each schema server and namespace
-    * provide a "reindex" button (depends on "improve pgvector persistence")
-  * navigation sidebar
-  * line up index form fields
+    * provide a "reindex" button (depends on "clear reindexed schemas by registry+namespace")
 
 DONE
 * split the schema documents by JSON Schema property (hook in at EmbeddingStoreIngestor.builder())
@@ -19,4 +18,7 @@ DONE
     * errors: IO problems, remote HTTP errors, JSON parse errors
     * notices: skipped namespaces or schemas that didn't match the filter
   * bubble these up to the top result
-* Index UI: render successes and errors better (colour codes, include exception message)
+* Index UI:
+  * render successes and errors better (colour codes, include exception message)
+  * navigation bar
+  * line up index form fields
