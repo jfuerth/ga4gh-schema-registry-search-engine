@@ -42,8 +42,22 @@
         }
         .schema-header {
             display: flex;
-            align-items: center;
+            align-items: baseline;
             justify-content: space-between;
+            width: 100%;
+        }
+        .schema-info {
+            display: flex;
+            align-items: baseline;
+            gap: 10px; /* Spacing between name and maintainer */
+        }
+        .schema-header .btn-flat {
+            margin-left: auto; /* Pushes the icon to the right */
+        }
+        .schema-maintainer {
+            color: #aaa;
+            font-size: 0.9em;
+            margin-left: 0;
         }
         .learn-more {
             margin-top: 10px;
@@ -91,12 +105,16 @@
     <ul class="collection">
         <li th:each="hit : ${searchResult.hits}" class="collection-item">
             <div class="schema-header">
-                <h5 th:text="${hit.metadata['schema.name']}"></h5>
+                <div class="schema-info">
+                    <h5 th:text="${hit.metadata['schema.name']}"></h5>
+                    <span class="schema-maintainer" th:text="|By ${hit.metadata['schema.maintainers'].replace('[', '').replace(']', '')}|"></span>
+                </div>
                 <a th:href="${hit.metadata['schema.version.uri']}" target="_blank" class="btn-flat">
                     <i class="material-icons">link</i>
                 </a>
             </div>
-            <p><strong>Maintainers:</strong> <span th:text="${hit.metadata['schema.maintainers']}"></span></p>
+            <div class="schema-description" th:text="${hit.metadata['schema.content.description']}" />
+            <p><strong>Matching Property:</strong> <span th:text="${hit.metadata['schema.content.propertyName']}"></span></p>
             <pre><code class="json" th:text="${hit.text}"></code></pre>
         </li>
     </ul>
